@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard – SalesApp{% endblock %}
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card stat-card text-center">
+      <div class="card-body">
+        <div class="text-primary fs-1"><i class="bi bi-cart-check"></i></div>
+        <h3 class="mb-0">{{ total_sales_today }}</h3>
+        <small class="text-muted">Ventas hoy</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card text-center">
+      <div class="card-body">
+        <div class="text-success fs-1"><i class="bi bi-currency-dollar"></i></div>
+        <h3 class="mb-0">${{ revenue_today|floatformat:2 }}</h3>
+        <small class="text-muted">Ingresos hoy</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card text-center">
+      <div class="card-body">
+        <div class="text-warning fs-1"><i class="bi bi-calendar-month"></i></div>
+        <h3 class="mb-0">${{ revenue_month|floatformat:2 }}</h3>
+        <small class="text-muted">Ingresos del mes</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card text-center">
+      <div class="card-body">
+        <div class="{% if low_stock > 0 %}text-danger{% else %}text-success{% endif %} fs-1">
+          <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <h3 class="mb-0">{{ low_stock }}</h3>
+        <small class="text-muted">Productos stock bajo</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-clock-history"></i> Últimas Ventas</span>
+        <a href="{% url 'sale_list' %}" class="btn btn-sm btn-outline-primary">Ver todas</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th class="text-end">Total</th><th>Estado</th></tr></thead>
+          <tbody>
+            {% for sale in recent_sales %}
+            <tr>
+              <td><a href="{% url 'sale_detail' sale.pk %}">#{{ sale.pk }}</a></td>
+              <td>{{ sale.created_at|date:"d/m/Y H:i" }}</td>
+              <td>{{ sale.customer_name|default:"—" }}</td>
+              <td class="text-end">${{ sale.total }}</td>
+              <td>
+                {% if sale.status == 'completed' %}
+                  <span class="badge bg-success">Completada</span>
+                {% elif sale.status == 'pending' %}
+                  <span class="badge bg-warning text-dark">Pendiente</span>
+                {% else %}
+                  <span class="badge bg-secondary">Cancelada</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">Sin ventas aún.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-lightning-charge"></i> Acciones Rápidas</div>
+      <div class="card-body d-flex flex-column gap-2">
+        <a href="{% url 'sale_create' %}" class="btn btn-primary">
+          <i class="bi bi-cart-plus"></i> Nueva Venta
+        </a>
+        <a href="{% url 'inventory_list' %}" class="btn btn-outline-primary">
+          <i class="bi bi-archive"></i> Ver Inventario
+        </a>
+        <a href="{% url 'sales_report' %}" class="btn btn-outline-secondary">
+          <i class="bi bi-bar-chart-line"></i> Reporte de Ventas
+        </a>
+        <a href="{% url 'inventory_report' %}" class="btn btn-outline-secondary">
+          <i class="bi bi-box-seam"></i> Reporte de Inventario
+        </a>
+        {% if user.is_admin %}
+        <a href="{% url 'product_create' %}" class="btn btn-outline-success">
+          <i class="bi bi-plus-circle"></i> Nuevo Producto
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
