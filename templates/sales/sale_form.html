@@ -83,8 +83,8 @@
     if (!firstRow) return;
     const newRow = firstRow.cloneNode(true);
     newRow.querySelectorAll('input, select').forEach(el => {
-      el.name = el.name.replace(/-\d+-/, `-${formCount}-`);
-      el.id = el.id.replace(/_\d+_/, `_${formCount}_`);
+      el.name = el.name.replace(/-\d+-/g, `-${formCount}-`);
+      el.id = el.id.replace(/_\d+_/g, `_${formCount}_`);
       if (el.type !== 'hidden') el.value = '';
     });
     tbody.appendChild(newRow);

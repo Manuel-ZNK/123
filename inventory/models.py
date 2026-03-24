@@ -28,7 +28,12 @@ class Inventory(models.Model):
 
     @property
     def is_low_stock(self):
-        return self.quantity <= self.minimum_stock
+        """Return True when quantity is below (not equal to) the minimum_stock threshold.
+        
+        minimum_stock represents the lowest *acceptable* quantity; reaching it
+        triggers a low-stock warning so staff can reorder before running out.
+        """
+        return self.quantity < self.minimum_stock
 
 
 class InventoryMovement(models.Model):

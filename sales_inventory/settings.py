@@ -7,13 +7,19 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Read SECRET_KEY from environment variable; fall back to a development-only default.
-SECRET_KEY = os.environ.get(
-    'DJANGO_SECRET_KEY',
-    'change-me-in-production-use-a-long-random-string',
-)
+# Read SECRET_KEY from environment variable.
+# SECURITY WARNING: Set DJANGO_SECRET_KEY in production. The fallback is only
+# safe for local development and will raise an error when DEBUG is False.
+_secret_key_default = 'change-me-in-production-use-a-long-random-string'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', _secret_key_default)
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+
+if not DEBUG and SECRET_KEY == _secret_key_default:
+    raise RuntimeError(
+        'DJANGO_SECRET_KEY environment variable must be set when DEBUG=False. '
+        'Generate one with: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"'
+    )
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
 
