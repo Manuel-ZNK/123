@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Reporte de Inventario – SalesApp{% endblock %}
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-box-seam"></i> Reporte de Inventario</h4>
+
+{% if low_stock %}
+<div class="alert alert-warning">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  <strong>{{ low_stock|length }} producto(s)</strong> con stock bajo o en cero.
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Producto</th><th>Categoría</th><th>P. Venta</th>
+          <th class="text-center">Stock</th><th class="text-center">Mín.</th><th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inv in inventories %}
+        <tr class="{% if inv.is_low_stock %}table-warning{% endif %}">
+          <td>
+            <strong>{{ inv.product.name }}</strong><br>
+            <small class="text-muted">{{ inv.product.code }}</small>
+          </td>
+          <td>{{ inv.product.category|default:"—" }}</td>
+          <td>${{ inv.product.sale_price }}</td>
+          <td class="text-center fw-bold">{{ inv.quantity }}</td>
+          <td class="text-center text-muted">{{ inv.minimum_stock }}</td>
+          <td>
+            {% if inv.quantity == 0 %}
+              <span class="badge bg-danger">Sin stock</span>
+            {% elif inv.is_low_stock %}
+              <span class="badge bg-warning text-dark">Stock bajo</span>
+            {% else %}
+              <span class="badge bg-success">OK</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">No hay inventario registrado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

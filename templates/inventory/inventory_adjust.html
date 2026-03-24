@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Ajustar Inventario – SalesApp{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4><i class="bi bi-pencil-square"></i> Ajustar Inventario</h4>
+  <a href="{% url 'inventory_list' %}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left"></i> Volver
+  </a>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="text-muted">Producto</h6>
+        <h5>{{ inventory.product.name }}</h5>
+        <p class="text-muted mb-1">Código: <code>{{ inventory.product.code }}</code></p>
+        <p class="mb-0">Stock actual: <strong class="fs-4 {% if inventory.is_low_stock %}text-warning{% else %}text-success{% endif %}">{{ inventory.quantity }}</strong></p>
+        <p class="text-muted small">Stock mínimo: {{ inventory.minimum_stock }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-body p-4">
+        <h6 class="mb-3">Registrar Movimiento</h6>
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="text-danger small">{{ field.errors.0 }}</div>{% endif %}
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg"></i> Registrar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

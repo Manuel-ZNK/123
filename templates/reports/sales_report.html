@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Reporte de Ventas – SalesApp{% endblock %}
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-bar-chart-line"></i> Reporte de Ventas</h4>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Desde</label>
+        <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Hasta</label>
+        <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+      </div>
+      <div class="col-md-4">
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="bi bi-search"></i> Filtrar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="text-muted">Total ventas</h5>
+        <h3>{{ sales|length }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="text-muted">Ingresos totales</h5>
+        <h3 class="text-success">${{ total_revenue|floatformat:2 }}</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>#</th><th>Fecha</th><th>Vendedor</th><th>Cliente</th><th class="text-end">Total</th><th>Estado</th></tr></thead>
+      <tbody>
+        {% for sale in sales %}
+        <tr>
+          <td><a href="{% url 'sale_detail' sale.pk %}">#{{ sale.pk }}</a></td>
+          <td>{{ sale.created_at|date:"d/m/Y H:i" }}</td>
+          <td>{{ sale.salesperson|default:"—" }}</td>
+          <td>{{ sale.customer_name|default:"—" }}</td>
+          <td class="text-end">${{ sale.total }}</td>
+          <td>
+            {% if sale.status == 'completed' %}
+              <span class="badge bg-success">Completada</span>
+            {% elif sale.status == 'pending' %}
+              <span class="badge bg-warning text-dark">Pendiente</span>
+            {% else %}
+              <span class="badge bg-secondary">Cancelada</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">No hay ventas en este período.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

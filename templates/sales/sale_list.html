@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Ventas – SalesApp{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4><i class="bi bi-cart3"></i> Ventas</h4>
+  <a href="{% url 'sale_create' %}" class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-lg"></i> Nueva Venta
+  </a>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr><th>#</th><th>Fecha</th><th>Vendedor</th><th>Cliente</th><th class="text-end">Total</th><th>Estado</th><th>Acciones</th></tr>
+      </thead>
+      <tbody>
+        {% for sale in sales %}
+        <tr>
+          <td>{{ sale.pk }}</td>
+          <td>{{ sale.created_at|date:"d/m/Y H:i" }}</td>
+          <td>{{ sale.salesperson|default:"—" }}</td>
+          <td>{{ sale.customer_name|default:"—" }}</td>
+          <td class="text-end">${{ sale.total }}</td>
+          <td>
+            {% if sale.status == 'completed' %}
+              <span class="badge bg-success">Completada</span>
+            {% elif sale.status == 'pending' %}
+              <span class="badge bg-warning text-dark">Pendiente</span>
+            {% else %}
+              <span class="badge bg-secondary">Cancelada</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'sale_detail' sale.pk %}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-eye"></i>
+            </a>
+            {% if user.is_admin and sale.status != 'cancelled' %}
+            <a href="{% url 'sale_cancel' sale.pk %}" class="btn btn-sm btn-outline-danger">
+              <i class="bi bi-x-circle"></i>
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No hay ventas registradas.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
